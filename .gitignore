@@ -1,0 +1,5 @@
+clickhouse
+clickhouse-server
+minio_data
+.vscode
+*.session.sql
