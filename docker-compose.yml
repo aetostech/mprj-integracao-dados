@@ -6,9 +6,9 @@ services:
     ports:
       - 8123:8123
 
-    # volumes:
-      # - ./clickhouse:/var/lib/clickhouse
-      # - ./clickhouse-server:/etc/clickhouse-server
+    volumes:
+      - ./clickhouse:/var/lib/clickhouse
+      - ./clickhouse-server:/etc/clickhouse-server
 
     environment:
       - CLICKHOUSE_USER=admin
@@ -30,3 +30,13 @@ services:
     environment:
       - MINIO_ROOT_USER=ROOTNAME
       - MINIO_ROOT_PASSWORD=CHANGEME123
+
+  graph:
+    image: neo4j
+      
+    volumes:
+      - ./neo4j-data:/data
+
+    ports:
+      - 7474:7474
+      - 7687:7687
