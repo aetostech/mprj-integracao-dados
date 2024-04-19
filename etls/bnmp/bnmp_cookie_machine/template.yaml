@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  bnmp-cookie
+
+  BNMP captcha solving and cookie updating components
+
+Resources:
+  BnmpCookieStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      DefinitionUri: statemachine/bnmp.asl.json
+      DefinitionSubstitutions:
+        CaptchaSolverFunctionArn: !GetAtt CaptchaSolverFunction.Arn
+        CookieUpdaterFunctionArn: !GetAtt CookieUpdaterFunction.Arn
+
+  CaptchaSolverFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/captcha_solver/
+      Handler: captcha_solver.lambda_handler
+      Runtime: python3.9
+      Timeout: 60
+      MemorySize: 2048
+      EphemeralStorage:
+        Size: 1024
+      Layers:
+        - arn:aws:lambda:us-east-1:345917470638:layer:HeadlessChromium:2
+      Architectures:
+        - x86_64
+
+  CookieUpdaterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/cookie_updater/
+      Handler: cookie_updater.lambda_handler
+      Runtime: python3.9
+      Timeout: 30
+      Architectures:
+        - x86_64
+
+Outputs:
+  BnmpCookieStateMachineArn:
+    Description: "BNMP Cookie State Machine ARN"
+    Value: !Ref BnmpCookieStateMachine
+  BnmpCookieStateMachineRoleArn:
+    Description: "IAM Role created for BNMP Cookie State Machine based on the specified SAM Policy Templates"
+    Value: !GetAtt BnmpCookieStateMachineRole.Arn

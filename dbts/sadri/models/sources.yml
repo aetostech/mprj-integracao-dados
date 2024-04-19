@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: unibase
+    database: sadri
+    schema: unibase
+    tables:
+      - name: contrato
+      - name: aditivo 
+      - name: proposta
+      - name: fornecedor
+      - name: base
+      - name: entidade
+      - name: lote
+      - name: orgao_superior
+  - name: dados_cadastrais
+    database: sadri 
+    schema: dados_cadastrais 
+    tables:
+      - name: doacao_campanha
+      - name: candidatura
+      - name: despesa_campanha
+      - name: pessoa_juridica
+      - name: pessoa_juridica_cnaes
+      - name: socio
+      - name: punicao
+      - name: beneficios_sociais
+      - name: n_funcionarios_lai

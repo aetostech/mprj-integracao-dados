@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  bnmp-scrap
+
+  BNMP scraping components
+
+Resources:
+  BnmpScrapStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      DefinitionUri: statemachine/bnmp.asl.json
+      DefinitionSubstitutions:
+        WorkflowSetupFunctionArn: !GetAtt WorkflowSetupFunction.Arn
+  
+  WorkflowSetupFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/worflow_setup/
+      Handler: worflow_setup.lambda_handler
+      Runtime: python3.9
+      Timeout: 120
+      Architectures:
+        - x86_64
+
+Outputs:
+  BnmpScrapStateMachineArn:
+    Description: "BNMP Scrap State Machine ARN"
+    Value: !Ref BnmpScrapStateMachine
+  BnmpScrapStateMachineRoleArn:
+    Description: "IAM Role created for BNMP Scrap State Machine based on the specified SAM Policy Templates"
+    Value: !GetAtt BnmpScrapStateMachineRole.Arn
+

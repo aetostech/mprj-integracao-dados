@@ -1,0 +1,6 @@
+{
+    "Comment": "BNMP Scrap State Machine",
+    "StartAt": "",
+    "States": {},
+    "TimeoutSeconds": 600
+}

@@ -1,0 +1,1 @@
+Pessoas expostas politicamente

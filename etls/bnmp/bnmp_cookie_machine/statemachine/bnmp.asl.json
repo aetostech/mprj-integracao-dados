@@ -1,0 +1,39 @@
+{
+    "Comment": "BNMP Cookie State Machine",
+    "StartAt": "CaptchaSolver",
+    "States": {
+        "CaptchaSolver": {
+            "Type": "Task",
+            "Resource": "${CaptchaSolverFunctionArn}",
+            "TimeoutSeconds": 60,
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.ALL"
+                    ],
+                    "IntervalSeconds": 5,
+                    "MaxAttempts": 5,
+                    "BackoffRate": 10
+                }
+            ],
+            "Next": "CookieUpdater"
+        },
+        "CookieUpdater": {
+            "Type": "Task",
+            "Resource": "${CookieUpdaterFunctionArn}",
+            "TimeoutSeconds": 30,
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.Timeout"
+                    ],
+                    "IntervalSeconds": 5,
+                    "MaxAttempts": 3,
+                    "BackoffRate": 5
+                }
+            ],
+            "End": true
+        }
+    },
+    "TimeoutSeconds": 600
+}

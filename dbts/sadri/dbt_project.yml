@@ -1,0 +1,66 @@
+
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
+name: 'sadri'
+version: '1.0.0'
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'sadri'
+
+# These configurations specify where dbt should look for different types of files.
+# The `model-paths` config, for example, states that models in this project can be
+# found in the "models/" directory. You probably won't need to change these!
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+vars:
+  majoracao_aditivos_taxa_min: 1.5
+  conluio_grupo_economico_num_propostas_nao_competitivo_max: 7
+  conluio_grupo_economico_num_lotes_juntas_min: 2
+  conluio_grupo_economico_taxa_vitoria_conluio_min: 0.3
+  conluio_socio_valor_ganho_conluio_min: 1000000
+  conluio_socio_num_lotes_juntas_min: 10
+  conluio_socio_num_propostas_nao_competitivo_max: 4
+  conluio_telefone_num_lotes_juntas_min: 2
+  conluio_telefone_taxa_vitoria_no_conluio_min: 0.3
+  conluio_telefone_num_propostas_nao_competitivo_max: 7
+  propostas_simetricas_relativas_num_licitacoes_min: 2
+  propostas_simetricas_relativas_num_lotes_min: 30
+  propostas_simetricas_relativas_num_propostas_nao_competitivo_max: 7
+  propostas_simetricas_relativas_taxa_vitoria_no_conluio_min: 0.6
+  propostas_simetricas_relativas_valor_ganho_no_conluio_min: 100000
+  propostas_simetricas_absolutas_num_licitacoes_min: 1
+  propostas_simetricas_absolutas_num_lotes_min: 2
+  propostas_simetricas_absolutas_num_propostas_nao_competitivo_max: 7
+  propostas_simetricas_absolutas_valor_ganho_no_conluio_min: 100000
+  conluio_top_loser_num_propostas_nao_competitivo_max: 5
+  conluio_top_loser_valor_contratos_max: 1000000
+  conluio_top_loser_proporcao_contrato_proposta_max: 0.03
+  conluio_top_loser_valor_proposta_ganhadora_max: 3000000
+  conluio_top_loser_taxa_vitoria_max: 0.03
+  conluio_top_loser_taxa_vitoria_sobre_top_loser_min: 0.4
+  conluio_top_loser_significancia_sobre_top_loser_min: 0.4
+  conluio_top_loser_num_lotes_conluio_min: 2
+  conluio_top_loser_num_vitorias_conluio_min: 3
+
+models:
+  sadri:
+    +materialized: table
+    conluio:
+      +schema: conluio
+    matriz_risco:
+      +schema: matriz_risco
+    risco_empresa:
+      +schema: risco_empresa
+    risco_socio:
+      +schema: risco_socio

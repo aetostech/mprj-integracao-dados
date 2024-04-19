@@ -1,0 +1,40 @@
+service: coaf
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.8
+  profile: etl
+  deploymentMethod: direct
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+      Resource: "arn:aws:s3:::linker-etl/raw/coaf/*"
+    - Effect: "Allow"
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+      Resource: "arn:aws:s3:::linker-etl/processed/coaf/*"
+    - Effect: "Allow"
+      Action:
+        - secretsmanager:GetSecretValue
+      Resource: "*"
+  ecr:
+    # In this section you can define images that will be built locally and uploaded to ECR
+    images:
+      etlimage:
+        path: ./
+        file: Dockerfile
+
+functions:
+
+  etl:
+    description: performs the etl pipeline for COAF
+    image:
+      name: etlimage
+    timeout: 300
+    events:
+      - schedule: cron(0 12 * * ? *)

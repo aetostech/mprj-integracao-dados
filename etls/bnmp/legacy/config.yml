@@ -1,0 +1,49 @@
+log:
+  datefmt: "%H:%M:%S"
+  format: "[%(asctime)s %(funcName)s():%(lineno)s]%(levelname)s: %(message)s"
+
+payloads:
+  agency: '{{"buscaOrgaoRecursivo":false,"orgaoExpeditor":{agency},"idEstado":{state},"idMunicipio":{city}}}'
+  city: '{{"buscaOrgaoRecursivo":false,"orgaoExpeditor":{{}},"idEstado":{state},"idMunicipio":{city}}}'
+  doctype: '{{"buscaOrgaoRecursivo":false,"orgaoExpeditor":{agency},"idEstado":{state},"idMunicipio":{city},"idTipoDocumento":{doctype}}}'
+  state: '{{"buscaOrgaoRecursivo":false,"orgaoExpeditor":{{}},"idEstado":{state}}}'
+
+requests:
+  timeout: 60
+
+threads:
+  max_workers: 24
+
+url:
+  agencies: https://portalbnmp.cnj.jus.br/bnmpportal/api/pesquisa-pecas/orgaos/municipio/{city}
+  base: https://portalbnmp.cnj.jus.br/bnmpportal/api/pesquisa-pecas/filter?page={page}&size={query_size}&sort=numeroPeca,{order}
+  cities: https://portalbnmp.cnj.jus.br/scaservice/api/municipios/por-uf/{state}
+  details: https://portalbnmp.cnj.jus.br/bnmpportal/api/certidaos/{id}/{type}
+  pdf: https://portalbnmp.cnj.jus.br/bnmpportal/api/certidaos/relatorio/{id}/{type}
+
+parser:
+  sql:
+    insert_parsed: INSERT INTO bnmp.mandados (SELECT * FROM bnmp.bnmp_mandados_temp);
+    insert_raw: INSERT INTO bnmp.raw_mandados (SELECT * FROM bnmp.bnmp_new_temp);
+    select_unparsed: >-
+      SELECT r.data_raspagem, r.data_visto_em, r.raw_detalhe
+        FROM bnmp.raw_mandados r
+      LEFT JOIN bnmp.mandados m
+        ON r.id = m.id
+      WHERE m.id IS NULL AND r.raw_detalhe IS NOT NULL;
+    update_dates_raw: >-
+      UPDATE bnmp.raw_mandados
+        SET data_visto_em = '{today}'
+          FROM bnmp.bnmp_old_ids_temp b2 JOIN bnmp.raw_mandados b1
+            ON b1.id = b2.id
+            AND b1.numero_processo = b2.numero_processo;
+    update_dates_parsed: >-
+      UPDATE bnmp.mandados
+        SET data_visto_em = '{today}'
+          FROM bnmp.bnmp_old_ids_temp b2 JOIN bnmp.mandados b1
+            ON b1.id = b2.id
+            AND b1.numero_processo = b2.numero_processo;
+
+scraper:
+  sql:
+    select_raw_ids: SELECT id FROM bnmp.raw_mandados;
